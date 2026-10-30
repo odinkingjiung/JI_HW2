@@ -1,6 +1,6 @@
-# Steam Live Players
+# Steam Live Players (FastAPI)
 
-Steam 공개 Web API를 이용해 Counter-Strike 2, PUBG: BATTLEGROUNDS, Dota 2의 현재 동시접속자 수를 보여주는 Flask 웹 서비스입니다.
+Steam 공개 Web API를 이용해 Counter-Strike 2, PUBG: BATTLEGROUNDS, Dota 2의 현재 동시접속자 수를 보여주는 FastAPI 웹 서비스입니다.
 
 ## 주요 기능
 
@@ -12,7 +12,7 @@ Steam 공개 Web API를 이용해 Counter-Strike 2, PUBG: BATTLEGROUNDS, Dota 2�
 ## 사용 기술
 
 - Python 3.13
-- Flask
+- FastAPI, Uvicorn
 - Requests
 - HTML, CSS, JavaScript
 - pytest
@@ -33,10 +33,10 @@ py -m pip install -r requirements.txt
 ## 로컬 실행
 
 ```powershell
-py app.py
+py -m uvicorn app:app --reload
 ```
 
-브라우저에서 <http://127.0.0.1:5000>을 엽니다. Steam API 연결은 실행 컴퓨터의 네트워크 환경에 따라 달라질 수 있습니다.
+브라우저에서 <http://127.0.0.1:8000>을 엽니다. Steam API 연결은 실행 컴퓨터의 네트워크 환경에 따라 달라질 수 있습니다.
 
 ## 테스트
 
@@ -44,7 +44,7 @@ py app.py
 py -m pytest -q
 ```
 
-기존 검증 결과는 다음과 같습니다.
+FastAPI 변경 후 검증 결과는 다음과 같습니다.
 
 - pytest 테스트 3개 모두 통과
 - 로컬 Flask 페이지 HTTP 응답 정상 확인
@@ -56,7 +56,7 @@ py -m pytest -q
 
 ## GitHub Actions 자동 테스트
 
-`.github/workflows/ci.yml`은 GitHub 저장소에 push하거나 pull request를 생성할 때 Ubuntu 환경에서 Python을 설치하고 `pytest`를 실행합니다. 저장소에 코드를 push한 후 GitHub의 Actions 탭에서 결과를 확인할 수 있습니다.
+`.github/workflows/ci.yml`은 GitHub 저장소에 push하거나 pull request를 생성할 때 Ubuntu 환경에서 Python을 설치하고 `python -m pytest -q`를 실행합니다.
 
 ## Render 배포
 
@@ -65,7 +65,7 @@ Render 배포는 아직 완료되지 않았습니다. 다음 절차로 직접 �
 1. GitHub에 새 저장소를 만들고 이 `upload` 폴더의 파일을 저장소에 업로드합니다.
 2. Render에 로그인하고 **New > Web Service**를 선택합니다.
 3. GitHub 계정을 연결한 뒤 해당 저장소를 선택합니다.
-4. 저장소의 `render.yaml`을 사용하거나 Build Command에 `pip install -r requirements.txt gunicorn`, Start Command에 `gunicorn app:app`을 입력합니다.
+4. 저장소의 `render.yaml`을 사용하거나 Build Command에 `pip install -r requirements.txt`, Start Command에 `uvicorn app:app --host 0.0.0.0 --port $PORT`를 입력합니다.
 5. 배포가 완료되면 Render 대시보드에서 생성된 공개 URL을 확인합니다.
 6. 공개 URL에서 게임 카드, 그래프, 새로고침 및 오류 표시를 확인합니다.
 

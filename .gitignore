@@ -4,5 +4,3 @@ pytest-cache-files*/
 .venv/
 *.pyc
 .env
-*.log
-*.tmp

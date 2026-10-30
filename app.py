@@ -1,9 +1,14 @@
 from datetime import datetime, timezone
 
 import requests
-from flask import Flask, jsonify, render_template, request
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
-app = Flask(__name__)
+app = FastAPI(title="Steam Live Players")
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
 
 GAMES = {
     "cs2": {"name": "Counter-Strike 2", "appid": 730},
@@ -31,26 +36,31 @@ def get_players(game):
 
 
 @app.get("/")
-def index():
-    return render_template("index.html", games=GAMES)
+async def index(request: Request):
+    return templates.TemplateResponse(request=request, name="index.html", context={"games": GAMES})
 
 
 @app.get("/api/players")
-def players():
-    requested = request.args.get("games")
-    keys = requested.split(",") if requested else list(GAMES)
+async def players(games: str | None = None):
+    keys = games.split(",") if games else list(GAMES)
     unknown = [key for key in keys if key not in GAMES]
     if unknown:
-        return jsonify({"error": f"알 수 없는 게임 정보입니다: {', '.join(unknown)}"}), 400
+        raise HTTPException(status_code=400, detail=f"알 수 없는 게임 정보입니다: {', '.join(unknown)}")
     result = []
     try:
         for key in keys:
             game = GAMES[key]
             result.append({"key": key, "name": game["name"], "players": get_players(game)})
     except SteamAPIError as exc:
-        return jsonify({"error": str(exc)}), 502
-    return jsonify({"updated_at": datetime.now(timezone.utc).isoformat(), "games": result})
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    return {"updated_at": datetime.now(timezone.utc).isoformat(), "games": result}
+
+
+@app.exception_handler(HTTPException)
+async def http_error(request: Request, exc: HTTPException):
+    return JSONResponse(status_code=exc.status_code, content={"error": exc.detail})
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=True)
+    import uvicorn
+    uvicorn.run("app:app", host="127.0.0.1", port=5000, reload=True)
