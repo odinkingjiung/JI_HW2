@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: steam-live-players
+    runtime: python
+    buildCommand: pip install -r requirements.txt gunicorn
+    startCommand: gunicorn app:app
