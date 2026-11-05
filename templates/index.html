@@ -11,6 +11,7 @@
     <form id="add-game" class="add-game"><input id="game-name" placeholder="게임 이름" required><input id="game-appid" type="number" min="1" placeholder="Steam App ID" required><button type="submit">게임 추가</button></form>
     <section id="cards" class="cards" aria-live="polite"></section>
     <section class="chart-panel"><h2>게임별 비교</h2><div id="chart" class="chart"></div></section>
+    <section class="ops-panel"><div class="ops-heading"><h2>서비스 운영 상태</h2><span id="ops-status" class="status-pill">확인 중</span></div><div class="ops-grid"><div><span>HTTP 요청</span><strong id="metric-http">-</strong></div><div><span>오류 횟수</span><strong id="metric-errors">-</strong></div><div><span>Steam API 요청</span><strong id="metric-steam">-</strong></div><div><span>캐시 적중</span><strong id="metric-cache">-</strong></div><div><span>평균 응답 시간</span><strong id="metric-latency">-</strong></div></div><p id="ops-updated" class="ops-updated">운영 지표를 불러오는 중...</p></section>
     <p id="error" class="error" role="alert"></p>
     <footer>데이터 출처: Steam Web API · 조회 시점에 따라 수치가 달라질 수 있습니다.</footer>
   </main>
