@@ -51,24 +51,24 @@ jobs:
       CONTAINER_NAME: steam-live-players
     steps:
       - name: Login to Docker Hub
-        shell: pwsh
+        shell: powershell
         env:
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         run: $env:DOCKERHUB_TOKEN | docker login --username "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       - name: Pull latest image
-        shell: pwsh
+        shell: powershell
         run: docker pull $env:IMAGE
 
       - name: Replace running container
-        shell: pwsh
+        shell: powershell
         run: |
           $existing = docker ps -aq -f "name=^$env:CONTAINER_NAME`$"
           if ($existing) { docker rm --force $env:CONTAINER_NAME }
           docker run --detach --restart unless-stopped --name $env:CONTAINER_NAME --publish 8000:8000 $env:IMAGE
 
       - name: Verify FastAPI is responding
-        shell: pwsh
+        shell: powershell
         run: |
           $healthy = $false
           for ($i = 0; $i -lt 12; $i++) {
