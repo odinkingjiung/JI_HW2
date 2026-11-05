@@ -4,3 +4,5 @@ pytest-cache-files*/
 .venv/
 *.pyc
 .env
+
+actions-runner/
