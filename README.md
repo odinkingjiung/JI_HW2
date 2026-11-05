@@ -1,17 +1,39 @@
-# Steam Live Players
+# Steam Live Players (FastAPI)
 
-Steam 공개 Web API로 Counter-Strike 2, PUBG: BATTLEGROUNDS, Dota 2의 현재 동시접속자 수를 보여주는 Flask 웹 서비스입니다. 게임별 카드, 막대 그래프, 수동 새로고침, API 오류 메시지를 제공합니다.
+Steam 공개 Web API로 Counter-Strike 2, PUBG: BATTLEGROUNDS, Dota 2의 현재 동시접속자 수를 보여주는 FastAPI 웹 서비스입니다. 게임별 카드, 막대 그래프, 수동 새로고침, API 오류 메시지를 제공합니다.
 
-## 로컬 실행
+## 기술 및 로컬 실행
 
 ```powershell
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-py app.py
+py -m uvicorn app:app --reload
 ```
 
-브라우저에서 http://127.0.0.1:5000 을 엽니다. 테스트는 `pytest -q`로 실행합니다.
+브라우저에서 http://127.0.0.1:8000 을 엽니다. 테스트는 `py -m pytest -q`로 실행합니다.
+
+## Docker 실행
+
+Docker Desktop을 실행한 뒤 프로젝트 루트에서 다음 명령을 사용합니다.
+
+```powershell
+docker build -t steam-live-players:local .
+docker run --rm -p 8000:8000 steam-live-players:local
+```
+
+브라우저에서 http://127.0.0.1:8000 을 엽니다.
+
+## GitHub Actions와 Docker Hub
+
+`.github/workflows/ci.yml`은 `main` 브랜치 push 시 테스트가 성공한 뒤 Docker 이미지를 빌드하고 Docker Hub에 `steam-live-players:latest` 및 커밋 SHA 태그로 Push합니다. Pull Request에서는 테스트만 실행합니다.
+
+GitHub 저장소의 **Settings > Secrets and variables > Actions**에 다음 Secrets를 등록해야 합니다.
+
+- `DOCKERHUB_USERNAME`: Docker Hub 사용자명
+- `DOCKERHUB_TOKEN`: Docker Hub Access Token
+
+Workflow가 참조하는 이미지 이름은 `${DOCKERHUB_USERNAME}/steam-live-players`입니다.
 
 ## GitHub 및 Render 배포
 
